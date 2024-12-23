@@ -1,13 +1,13 @@
 ---
-nav_group: "Area"
+nav_group: "Line"
 nav_order: 1
 title: "Toast"
 description: "A headless-chart example inspired by Area Chart using the same color scheme"
-image: /area-chart/toast.png
+image: /line-chart/toast.png
 files:
   App.js: |
     import Widget from "@meursyphus/flitter-react";
-    import { AreaChart } from "@meursyphus/headless-chart";
+    import { LineChart } from "@meursyphus/headless-chart";
     import {
       Text,
       Container,
@@ -21,58 +21,52 @@ files:
       Positioned,
     } from "@meursyphus/flitter";
 
-    import Area from "./area";
+    import Line from "./line";
     import Series from "./series";
     import XAxis from "./XAxis";
     import YAxis from "./YAxis";
 
     const data = {
       labels: [
-        "plane",
-        "helicopter",
-        "boat",
-        "train",
-        "subway",
-        "bus",
-        "car",
-        "moto",
-        "bicycle",
-        "horse",
-        "skateboard",
-        "others",
+        '01/01',
+        '02/01',
+        '03/01',
+        '04/01',
+        '05/01',
+        '06/01',
+        '07/01',
+        '08/01',
+        '09/01',
+        '10/01',
+        '11/01',
+        '12/01',
       ],
       datasets: [
         {
-          legend: "norway",
-          values: [600, 1000, -800, 1000, 500, 850, 600, 675, 720, 890, 700, 950],
-        },
-
-        {
-          legend: "germany",
-          values: [565, 850, -734, 863, 268, 571, -396, 588, 442, 726, 640, 732],
+          legend: 'Seoul',
+          values: [-3.5, -1.1, 4.0, 11.3, 17.5, 21.5, 25.9, 27.2, 24.4, 13.9, 6.6, -0.6],
         },
         {
-          legend: "us",
-          values: [435, 559, -482, 580, 167, 308, -255, 557, 437, 438, 543, 554],
+          legend: 'Seattle',
+          values: [3.8, 5.6, 7.0, 9.1, 12.4, 15.3, 17.5, 17.8, 15.0, 10.6, 6.6, 3.7],
         },
         {
-          legend: "france",
-          values: [242, 405, -262, 418, 109, 224, -216, 339, 428, 284, 247, 416],
+          legend: 'Sydney',
+          values: [22.1, 22.0, 20.9, 18.3, 15.2, 12.8, 11.8, 13.0, 15.2, 17.6, 19.4, 21.2],
         },
         {
-          legend: "japan",
-          values: [126, 166, -238, 122, 102, 120, -70, 281, 234, 59, 213, 289],
+          legend: 'Moscow',
+          values: [-10.3, -9.1, -4.1, 4.4, 12.2, 16.3, 18.5, 16.7, 10.9, 4.2, -2.0, -7.5],
+        },
+        {
+          legend: 'Jungfrau',
+          values: [-13.2, -13.7, -13.1, -10.3, -6.1, -3.2, 0.0, -0.1, -1.8, -4.5, -9.0, -10.9],
         },
       ],
     };
 
-    const chart = AreaChart({
+    const chart = LineChart({
       data,
-      getScale: () => ({
-        min: -900,
-        max: 1100,
-        step: 200,
-      }),
       custom: {
         layout: (...[{ legends, plot, title }]) =>
           Container({
@@ -99,8 +93,8 @@ files:
               ],
             }),
           }),
-        area: Area,
-        series: ({areas}) => new Series({areas}),
+        line: Line,
+        series: ({lines}) => new Series({lines}),
         xAxis: ({labels, line, tick}) => new XAxis({labels, line, tick}),
         yAxis: ({labels, line, tick}) => new YAxis({labels, line, tick}),
         xAxisLabel: (...[{ name }]) =>
@@ -110,7 +104,7 @@ files:
               style: new TextStyle({
                 fontFamily: "Noto Sans JP",
                 fontSize: 12,
-                color: "#666666",
+                color: "black",
               }),
             }),
           }),
@@ -121,7 +115,7 @@ files:
               style: new TextStyle({
                 fontFamily: "Noto Sans JP",
                 fontSize: 12,
-                color: "#666666",
+                color: "black",
               }),
             }),
           }),
@@ -129,22 +123,22 @@ files:
           Container({
             height: 6,
             width: 1,
-            color: "#BBBBBB",
+            color: "black",
           }),
         yAxisTick: () =>
           Container({
             height: 1,
             width: 6,
-            color: "#BBBBBB",
+            color: "black",
           }),
         yAxisLine: () =>
           Container({
-            color: "#BBBBBB",
+            color: "black",
             width: 1,
           }),
         xAxisLine: () =>
           Container({
-            color: "#BBBBBB",
+            color: "black",
             height: 1,
           }),
         gridXLine: () => Container({ height: 1, color: "#DDDDDD" }),
@@ -156,142 +150,42 @@ files:
       return <Widget width="auto" height="400px" widget={chart} renderer="svg" />;
     }
 
-  area.js: |
-    // Area.js
+  line.js: |
     import { CustomPaint, Path } from "@meursyphus/flitter";
-    import drawSplineLine from "./drawSplineLine"; 
     import colors from "./colors";           
 
-    export default function Area({ values, index }, { scale }) {
+
+    export default function Line({ values, index }, { scale }) {
       return CustomPaint({
         painter: {
           svg: {
             createDefaultSvgEl(context) {
               return {
-                linePath: context.createSvgEl("path"),
-                areaPath: context.createSvgEl("path"),
+                line: context.createSvgEl("path")
               };
             },
-            paint({ linePath, areaPath }, { width, height }) {
-              const path = new Path();
-
-              // 1) 스플라인(곡선) 라인을 그린다 (직선 원하면 spline: false)
-              drawSplineLine(path, {
-                width,
-                height,
-                minValue: scale.min,
-                maxValue: scale.max,
-                values,
+            paint({ line }, { height, width }) {
+              const linePath = new Path();
+              const points = values.map((value, index) => {
+                const y = height - (height * (value - scale.min)) / (scale.max - scale.min);
+                const x = (index * width) / (values.length - 1);
+                return { x, y };
               });
 
-              // "linePath" 속성
-              linePath.setAttribute("stroke", colors[index]);
-              linePath.setAttribute("fill", "none");
-              linePath.setAttribute("stroke-width", "2");
-              linePath.setAttribute("d", path.getD());
+              linePath.moveTo(points[0]);
+              points.slice(1).forEach((point) => {
+                linePath.lineTo(point);
+              });
 
-              // 2) 영역 채우기 (0선 = zeroY 기준)
-              const zeroRatio = (0 - scale.min) / (scale.max - scale.min); 
-              const zeroY = height - zeroRatio * height;
-
-              // path를 이어서 area 영역 닫기
-              path
-                .lineTo({ x: width, y: zeroY })
-                .lineTo({ x: 0,  y: zeroY })
-                .close();
-
-              // "areaPath" 속성
-              areaPath.setAttribute("fill", colors[index]);
-              areaPath.setAttribute("opacity", "0.3"); // 투명도
-              areaPath.setAttribute("d", path.getD());
+              line.setAttribute("fill", "none");
+              line.setAttribute("stroke", colors[index]);
+              line.setAttribute("stroke-width", "2");
+              line.setAttribute("d", linePath.getD());
             },
           },
         },
       });
     }
-
-  drawSplineLine.js: |
-    export function drawSplineLine(
-      path,
-      { width, height, minValue, maxValue, values }
-    ) {
-      const count = values.length;
-      if (count === 0) return;
-
-      // 1) values -> 픽셀 좌표로 변환
-      const points = values.map((val, i) => {
-        const x = (i / (count - 1)) * width;
-        const y = height - ((val - minValue) / (maxValue - minValue)) * height;
-        return { x, y };
-      });
-
-      // 2) 각 point에 bezier controlPoint를 계산하고 cubicTo로 그린다.
-      const bezierPoints = points.map((p) => ({
-        ...p,
-        controlPoint: { prev: null, next: null },
-      }));
-      setSplineControlPoints(bezierPoints);
-
-      // 3) path에 스플라인 곡선을 실제로 추가
-      bezierPoints.forEach((pt, i) => {
-        if (i === 0) {
-          path.moveTo(pt);
-        } else {
-          const { x: prevX, y: prevY } = bezierPoints[i - 1].controlPoint.next;
-          const { controlPoint, x, y } = pt;
-
-          path.cubicTo({
-            startControlPoint: { x: prevX, y: prevY },
-            endControlPoint: { x: controlPoint.prev.x, y: controlPoint.prev.y },
-            endPoint: { x, y },
-          });
-        }
-      });
-    }
-
-    function setSplineControlPoints(points) {
-      for (let i = 0; i < points.length; i++) {
-        const prev = points[i - 1] || points[i];
-        const cur = points[i];
-        const next = points[i + 1] || points[i];
-
-        cur.controlPoint = getControlPoints(prev, cur, next);
-      }
-    }
-
-    function getControlPoints(prev, cur, next) {
-      const TENSION = 0.333;
-      const d01 = getDistance(prev, cur);
-      const d12 = getDistance(cur, next);
-      const total = d01 + d12;
-
-      const fa = (TENSION * d01) / total || 0;
-      const fb = (TENSION * d12) / total || 0;
-
-      const x1 = cur.x,
-        y1 = cur.y;
-      const x0 = prev.x,
-        y0 = prev.y;
-      const x2 = next.x,
-        y2 = next.y;
-
-      return {
-        prev: {
-          x: x1 - fa * (x2 - x0),
-          y: y1 - fa * (y2 - y0),
-        },
-        next: {
-          x: x1 + fb * (x2 - x0),
-          y: y1 + fb * (y2 - y0),
-        },
-      };
-    }
-
-    function getDistance(a, b) {
-      return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
-    }
-
-    export default drawSplineLine
 
   series.js: |
     // Series.js
@@ -309,9 +203,9 @@ files:
     } from "@meursyphus/flitter";
 
     export default class Series extends StatefulWidget {
-      constructor({ areas }) {
+      constructor({ lines }) {
         super();
-        this.areas = areas;
+        this.lines = lines;
       }
 
       createState() {
@@ -340,7 +234,7 @@ files:
       }
 
       build(context) {
-        const { areas } = this.widget;
+        const { lines } = this.widget;
 
         // ClipRect로 width * tweenAnimation.value만큼만 보이게 자른다.
         return ClipRect({
@@ -353,9 +247,9 @@ files:
               height,
             }),
           child: Stack({
-            children: areas.map((area) =>
+            children: lines.map((line) =>
               Positioned.fill({
-                child: area,
+                child: line,
               })
             ),
           }),
